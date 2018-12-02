@@ -48,6 +48,25 @@ shellHelper.so = function() {
     })
   }
 
+  shellHelper.indexes = function() {
+    db.currentOp({msg: /index build/i}).inprog.forEach(function(op) {
+      var percentsPattern = /(\d+)\%/i;
+      var countPattern = /\d+\/\d+/i;
+  
+      var percents = percentsPattern.exec(op.msg)[1];
+      var count = countPattern.exec(op.msg)[0];
+      var name = op.command.ns
+  
+      if (!name) {
+        name = op.ns.split('.')[0] + '.' + op.command.createIndexes
+      }
+  
+      print(
+        sprintf('OP: %s. Index for \'%s\' is at %s\% (%s)', op.opid, name, percents, count)
+      );
+    });
+  }
+
 
   function bytesToSize(bytes, precision) {
     var kilobyte = 1024;
